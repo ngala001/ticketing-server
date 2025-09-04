@@ -20,6 +20,7 @@ export const typeDefs = `#graphql
     gameType: String!
     gameStage: String!
     tickets: [Ticket]
+    price: Section
     stadium: Stadium
   }
 
@@ -31,9 +32,17 @@ export const typeDefs = `#graphql
     time: String!
     gameType: String!
     gameStage: String!
+    price: AddSection
   }
 
   type Section {
+    vvip: Int
+    vip: Int
+    normal: Int
+    mediaBox: Int
+  }
+
+  input AddSection {
     vvip: Int
     vip: Int
     normal: Int
@@ -49,12 +58,20 @@ export const typeDefs = `#graphql
     matches: [Match]
   }
 
+  input AddStadium {
+    name: String!
+    location: String!
+    capacity: Int!
+    section: AddSection
+  }
+
   type Ticket {
     id: ID!
     section: String
     scannerCode: String!
     matchId: String!
     userId: String!
+    price: Int!
   }
   
   input CreateUser {
@@ -78,16 +95,36 @@ export const typeDefs = `#graphql
     success: String!
   }
 
+  type Team {
+    id: ID!
+    name: String!
+    stadiumId: String!
+    stadium: Stadium
+    logo: String!
+  }
+
+  input TeamInput {
+    name: String!
+    logo: String!
+    stadium: String
+  }
+
   type Query {
     users: [User!]!
     user(id: ID!): User!
+    teams: [Team!]!
+    team(id: ID!): Team
     matches: [Match!]!
     match(id: ID!): Match!
+    stadiums: [Stadium!]!
+    stadium(id: ID!): Stadium!
   }
 
   type Mutation {
     createUser(input: CreateUser): SignupRes!
     loginUser(input: LoginUser): AuthPayload!
+    addTeam(input: TeamInput): Team!
     addMatch(input: AddMatch): Match!
+    addStadium(input: AddStadium): Stadium!
   }
 `;

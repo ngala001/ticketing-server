@@ -29,6 +29,15 @@ model Stadium {
   capacity Int
   section  Json
   matches  Match[]
+  teams    Team[]
+}
+
+model Team {
+  id        String  @id @default(uuid())
+  name      String  @unique
+  logo      String
+  stadium   Stadium @relation(fields: [stadiumId], references: [id])
+  stadiumId String
 }
 
 model Match {
@@ -37,10 +46,11 @@ model Match {
   awayTeam  String
   stadium   Stadium  @relation(fields: [stadiumId], references: [id])
   stadiumId String
-  date      DateTime
-  time      DateTime
+  date      DateTime @db.Date
+  time      DateTime @db.Time
   gameType  String
   gameStage String
+  price     Json
   tickets   Ticket[]
 }
 
