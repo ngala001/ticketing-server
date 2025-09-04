@@ -15,7 +15,7 @@ type LoginType = {
   password: string
 }
 
-interface Context {
+export interface Context {
     prisma: PrismaClient
 }
 
