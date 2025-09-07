@@ -1,4 +1,3 @@
-import { error } from "console";
 import { cloudinary } from "../../lib/cloudinary";
 import { Context } from "./users.resolver";
 
@@ -16,7 +15,11 @@ import { Context } from "./users.resolver";
 export const TeamResolvers = {
     Query: {
       teams: async(parent:unknown,_:any, { prisma }: Context) => {
-        const teams = await prisma.team.findMany()
+        const teams = await prisma.team.findMany({
+          include: {
+            stadium: true
+          }
+        })
         if(!teams.length) {
             throw new Error("No team yet")
         }
