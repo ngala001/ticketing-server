@@ -1,3 +1,5 @@
+import { error } from "console";
+import { cloudinary } from "../../lib/cloudinary";
 import { Context } from "./users.resolver";
 
 
@@ -5,6 +7,10 @@ import { Context } from "./users.resolver";
     name: string
     logo: string
     stadium: string
+  }
+
+  type LogoUrl = {
+    logoUrl: string
   }
 
 export const TeamResolvers = {
@@ -43,7 +49,40 @@ export const TeamResolvers = {
     },
     Mutation: {
      addTeam: async(_:any, args:{input: TeamInput}, {prisma}: Context) => {
-        const {name, stadium, logo} = args.input
+        const {name, stadium, logo} = args.input;
+        if(!name || !stadium || !logo) {
+          throw new Error("Please fill in all fields")
+        }
+        //fetch stadium
+        const stadi = await prisma.stadium.findUnique({ where: { name: stadium }});
+        if(!stadi) throw new Error("Invalid or non-existing stadium")
+        //upload file to cloudinary
+        function uploadLogo(): Promise<string> {
+          return new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+              { upload_preset:'teams_logo'},
+              (error, result) => {
+                if(error || !result?.secure_url) {
+                 reject(new Error("Logo upload failed, try again"))
+                } else {
+                   resolve(result?.secure_url)
+                }
+              }).end(logo)
+
+          })
+        }
+
+        const logoUrl = await uploadLogo()
+
+        await prisma.team.create({
+          data: {
+            name,
+            stadiumId: stadi?.id,
+            logo: logoUrl
+          }
+        });
+
+          return { success: true}
         
      }
     }

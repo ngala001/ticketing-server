@@ -102,6 +102,9 @@ export const typeDefs = `#graphql
     stadium: Stadium
     logo: String!
   }
+  type TeamRes {
+    success: Boolean!
+  }
 
   input TeamInput {
     name: String!
@@ -123,7 +126,7 @@ export const typeDefs = `#graphql
   type Mutation {
     createUser(input: CreateUser): SignupRes!
     loginUser(input: LoginUser): AuthPayload!
-    addTeam(input: TeamInput): Team!
+    addTeam(input: TeamInput): TeamRes!
     addMatch(input: AddMatch): Match!
     addStadium(input: AddStadium): Stadium!
   }
